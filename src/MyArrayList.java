@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MyArrayList implements StringList {
+public class MyArrayList implements StringList<String> {
     private String[] list;
     private int size;
     private final int DEFAULT_CAPACITY = 10;
@@ -23,32 +23,18 @@ public class MyArrayList implements StringList {
 
     @Override
     public String add(String item) {
-        if (list[list.length - 1] != null) {
-            String[] newList = new String[list.length * 2];
-            System.arraycopy(list, 0, newList, 0, list.length);
-            list = newList;
-        }
-        return list[size++] = item;
+        grow();
+        list[size++] = item;
+        return item;
     }
 
     @Override
     public String add(int index, String item) {
-        if (list[list.length - 1] != null) {
-            String[] newList = new String[list.length * 2];
-            System.arraycopy(list, 0, newList, 0, index);
-            newList[index] = item;
-            System.arraycopy(list, index, newList, index + 1, list.length - index);
-            list = newList;
-            size++;
-        } else {
-            String[] newList = new String[list.length];
-            System.arraycopy(list, 0, newList, 0, index);
-            newList[index] = item;
-            System.arraycopy(list, index, newList, index + 1, list.length - (index + 1));
-            list = newList;
-            size++;
-        }
-
+        checkExp(index);
+        grow();
+        System.arraycopy(list, index, list, index + 1, size - index);
+        list[index] = item;
+        size++;
         return item;
     }
 
@@ -128,9 +114,9 @@ public class MyArrayList implements StringList {
         if (otherList == null) {
             throw new IllegalArgumentException("Сравнение некорректное!");
         }
-       if (size != otherList.size()) return false;
+        if (size != otherList.size()) return false;
         for (int i = 0; i < size; i++) {
-            if (list[i]!= otherList.get(i)) return false;
+            if (list[i] != otherList.get(i)) return false;
         }
         return true;
     }
@@ -158,10 +144,14 @@ public class MyArrayList implements StringList {
     }
 
 
-
     private void checkExp(int index) {
         if (index < 0 || index >= list.length) {
             throw new ArrayIndexOutOfBoundsException("Неверный индекс");
+        }
+    }
+    private void grow() {
+        if (list[list.length - 1] != null) {
+            list = Arrays.copyOf(list, list.length + list.length / 2);
         }
     }
 

@@ -1,57 +1,75 @@
+import java.util.function.IntUnaryOperator;
+import java.util.Arrays;
+import java.util.Random;
+
 public class Main {
     public static void main(String[] args) {
-        MyArrayList list = new MyArrayList(10);
-        list.add("1");
-        list.add("12");
-        list.add("123");
-        list.add("1234");
-        list.add("12345");
-        System.out.println(list);
-        System.out.println(list.size());
-        System.out.println("___");
-
-        list.add(2, "555");
-        System.out.println(list);
-        System.out.println("___");
-
-        list.set(2, "111");
-        System.out.println(list);
-        System.out.println("___");
-
-        list.remove(2);
-        System.out.println(list);
-        System.out.println("___");
-
-        list.remove("1");
-        System.out.println(list);
-        System.out.println("___");
-
-        System.out.println(list.contains("12"));
-        System.out.println("___");
-
-        System.out.println(list.indexOf("12"));
-        System.out.println("___");
-
-        System.out.println(list.lastIndexOf("123"));
-        System.out.println("___");
-
-        System.out.println(list.get(3));
-        System.out.println("___");
-
-        MyArrayList list1 = new MyArrayList(4);
-        list1.add("12");
-        list1.add("123");
-        list1.add("1234");
-        list1.add("12345");
-
-        System.out.println(list1.equals(list));
-
-        System.out.println(list.isEmpty());
-        System.out.println("___");
-
-        list1.clear();
-        System.out.println(list1);
+        int[] array = new int[100000];
+        Random random = new Random();
+        IntUnaryOperator randomInt = i -> random.nextInt();
+        Arrays.setAll(array, randomInt);
+        int[] array1 = array.clone();
+        int[] array2 = array.clone();
+        IntegerArrayList integerArrayList = new IntegerArrayList(100000);
+        for (int i = 0; i < 100000; i++) {
+            integerArrayList.add(random.nextInt(1000));
+        }
 
 
+        long start3 = System.currentTimeMillis();
+        System.out.println(integerArrayList.contains(777));
+        System.out.print("время поиска: ");
+
+        System.out.println(System.currentTimeMillis() - start3);
+
+
+        long start = System.currentTimeMillis();
+        sortBubble(array);
+        System.out.println(System.currentTimeMillis() - start);
+
+        long start1 = System.currentTimeMillis();
+        sortSelection(array1);
+        System.out.println(System.currentTimeMillis() - start1);
+
+        long start2 = System.currentTimeMillis();
+        sortInsertion(array2);
+        System.out.println(System.currentTimeMillis() - start2);
+
+    }
+    private static void swapElements(int[] arr, int indexA, int indexB) {
+        int tmp = arr[indexA];
+        arr[indexA] = arr[indexB];
+        arr[indexB] = tmp;
+    }
+    public static void sortBubble(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = 0; j < arr.length - 1 - i; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    swapElements(arr, j, j + 1);
+                }
+            }
+        }
+    }
+    public static void sortSelection(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            int minElementIndex = i;
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[j] < arr[minElementIndex]) {
+                    minElementIndex = j;
+                }
+            }
+            swapElements(arr, i, minElementIndex);
+        }
+    }
+    public static void sortInsertion(int[] arr) {
+        for (int i = 1; i < arr.length; i++) {
+            int temp = arr[i];
+            int j = i;
+            while (j > 0 && arr[j - 1] >= temp) {
+                arr[j] = arr[j - 1];
+                j--;
+            }
+            arr[j] = temp;
+        }
     }
 }

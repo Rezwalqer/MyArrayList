@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Random;
 
-public class IntegerArrayList implements StringList<Integer>{
+public class IntegerArrayList implements StringList<Integer> {
     private Integer[] list;
     private int size;
     private final int DEFAULT_CAPACITY = 10;
@@ -15,36 +15,25 @@ public class IntegerArrayList implements StringList<Integer>{
             list = new Integer[capacity];
         }
     }
+
     public IntegerArrayList() {
         list = new Integer[DEFAULT_CAPACITY];
     }
+
     @Override
     public Integer add(Integer item) {
-        if (list[list.length - 1] != null) {
-            Integer[] newList = new Integer[list.length * 2];
-            System.arraycopy(list, 0, newList, 0, list.length);
-            list = newList;
-        }
-        return list[size++] = item;
+        grow();
+        list[size++] = item;
+        return item;
     }
+
     @Override
     public Integer add(int index, Integer item) {
-        if (list[list.length - 1] != null) {
-            Integer[] newList = new Integer[list.length * 2];
-            System.arraycopy(list, 0, newList, 0, index);
-            newList[index] = item;
-            System.arraycopy(list, index, newList, index + 1, list.length - index);
-            list = newList;
-            size++;
-        } else {
-            Integer[] newList = new Integer[list.length];
-            System.arraycopy(list, 0, newList, 0, index);
-            newList[index] = item;
-            System.arraycopy(list, index, newList, index + 1, list.length - (index + 1));
-            list = newList;
-            size++;
-        }
-
+        checkExp(index);
+        grow();
+        System.arraycopy(list, index, list, index + 1, size - index);
+        list[index] = item;
+        size++;
         return item;
     }
 
@@ -82,9 +71,10 @@ public class IntegerArrayList implements StringList<Integer>{
 
     @Override
     public boolean contains(Integer item) {
-        sortInsertion();
+        quickSort(list, 0, size - 1);
         return contains2(item);
     }
+
     private void sortInsertion() {
         for (int i = 1; i < list.length; i++) {
             int temp = list[i];
@@ -96,6 +86,7 @@ public class IntegerArrayList implements StringList<Integer>{
             list[j] = temp;
         }
     }
+
     private boolean contains2(int element) {
         int min = 0;
         int max = list.length - 1;
@@ -152,7 +143,7 @@ public class IntegerArrayList implements StringList<Integer>{
         }
         if (size != otherList.size()) return false;
         for (int i = 0; i < size; i++) {
-            if (list[i]!= otherList.get(i)) return false;
+            if (list[i] != otherList.get(i)) return false;
         }
         return true;
     }
@@ -174,21 +165,56 @@ public class IntegerArrayList implements StringList<Integer>{
 
     }
 
+    private void grow() {
+        if (list[list.length - 1] != null) {
+            list = Arrays.copyOf(list, list.length + list.length / 2);
+        }
+    }
+
     @Override
     public Integer[] toArray() {
         return Arrays.copyOf(list, size);
     }
+
     private void checkExp(int index) {
-        if (index < 0 || index >= list.length) {
+        if (index < 0 || index > size) {
             throw new ArrayIndexOutOfBoundsException("Неверный индекс");
         }
     }
-
 
 
     @Override
     public String toString() {
         return Arrays.toString(Arrays.copyOf(list, size));
     }
+    public static void quickSort(Integer[] arr, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(arr, begin, end);
+
+            quickSort(arr, begin, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, end);
+        }
+    }
+    private static int partition(Integer[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+
+        for (int j = begin; j < end; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+
+                swapElements(arr, i, j);
+            }
+        }
+
+        swapElements(arr, i + 1, end);
+        return i + 1;
+    }
+    private static void swapElements(Integer[] arr, int indexA, int indexB) {
+        int tmp = arr[indexA];
+        arr[indexA] = arr[indexB];
+        arr[indexB] = tmp;
+    }
+
 
 }

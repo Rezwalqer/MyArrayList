@@ -35,6 +35,7 @@ public class Main {
         sortInsertion(array2);
         System.out.println(System.currentTimeMillis() - start2);
 
+
     }
     private static void swapElements(int[] arr, int indexA, int indexB) {
         int tmp = arr[indexA];
@@ -72,4 +73,6 @@ public class Main {
             arr[j] = temp;
         }
     }
+
+
 }
